@@ -1,0 +1,391 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #4F46E5;
+    --primary-hover: #4338CA;
+    --primary-light: rgba(79, 70, 229, 0.1);
+    --surface-dark: #0b0f19;
+  }
+
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: #f8fafc;
+    color: #0f172a;
+  }
+
+  #root {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  main section > div {
+    min-width: 0;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  ::selection {
+    background: rgb(99 102 241 / 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* ========================================================= */
+/* ROBUST CONCURSO / ENEM PRINT DOCUMENT STYLES              */
+/* ========================================================= */
+
+.print-doc {
+  background: #ffffff;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 18mm 16mm;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  color: #000000;
+  font-size: 10.5pt;
+  line-height: 1.4;
+}
+
+.print-doc h1 {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 18pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 2pt;
+  color: #000000;
+}
+
+.print-doc h2 {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 13pt;
+  font-weight: 700;
+  margin: 16pt 0 8pt;
+  border-bottom: 1.5px solid #000000;
+  padding-bottom: 3pt;
+  color: #000000;
+}
+
+.print-doc .info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8pt 24pt;
+  margin: 10pt 0 14pt;
+}
+
+.print-doc .info-grid .field {
+  border-bottom: 1px solid #000000;
+  padding: 4pt 0;
+  min-height: 20pt;
+}
+
+.print-doc .info-grid .label {
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4B5563;
+  margin-bottom: 2pt;
+  font-weight: 600;
+}
+
+.print-doc .instructions {
+  background: #F9FAFB;
+  border: 1px solid #D1D5DB;
+  padding: 8pt 12pt;
+  font-size: 9pt;
+  margin-bottom: 14pt;
+  line-height: 1.35;
+}
+
+.print-doc .instructions ul {
+  margin: 4pt 0 0 16pt;
+  list-style-type: disc;
+}
+
+.print-doc .instructions li {
+  margin: 2pt 0;
+}
+
+/* Dynamic Answer Sheet Bubble Grid */
+.answer-sheet {
+  margin: 12pt 0 18pt;
+}
+
+.answer-sheet-title {
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 700;
+  font-size: 11pt;
+  text-align: center;
+  margin-bottom: 6pt;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.answer-grid {
+  display: flex;
+  gap: 12pt;
+  justify-content: center;
+}
+
+.answer-col {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 3.5pt;
+  padding: 1.5pt 2pt;
+  font-size: 7.5pt;
+}
+
+.answer-header {
+  background: #000000;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 2.5pt 2pt;
+  margin-bottom: 2pt;
+  font-size: 7pt;
+}
+
+.anum {
+  width: 16pt;
+  text-align: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.alabel {
+  width: 11pt;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.acircle {
+  width: 10.5pt;
+  height: 10.5pt;
+  border-radius: 50%;
+  border: 1pt solid #000000;
+  display: inline-block;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Review answer key table */
+.answer-sheet table.rkey {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-size: 8.5pt;
+}
+
+.answer-sheet table.rkey th {
+  background: #000000;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
+  padding: 3pt 0;
+}
+
+.answer-sheet table.rkey td {
+  text-align: center;
+  padding: 2pt 0;
+  font-weight: 600;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.answer-sheet .rnum { width: 16pt; text-align: center; }
+.answer-sheet .rans { width: 14pt; text-align: center; color: #059669; font-weight: 700; }
+.answer-sheet .rgap { width: 8pt; border: none !important; background: transparent !important; }
+
+/* Writing Practice (Transcrição Caligráfica Oficial do ENEM) */
+.writing-practice {
+  margin: 14pt 0 18pt;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.writing-practice-title {
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 700;
+  font-size: 9.5pt;
+  text-align: center;
+  margin-bottom: 4pt;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #4B5563;
+}
+
+.writing-practice-phrase {
+  font-size: 10pt;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 8pt;
+  color: #000000;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.writing-line {
+  border-bottom: 1px solid #000000;
+  height: 22pt;
+  margin-top: 3pt;
+}
+
+/* Print Questions Format */
+.print-question {
+  margin-bottom: 14pt;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.print-question .q-header {
+  display: flex;
+  gap: 6pt;
+  align-items: baseline;
+  margin-bottom: 4pt;
+}
+
+.print-question .q-num {
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 700;
+  font-size: 10.5pt;
+}
+
+.print-question .q-meta {
+  font-size: 8.5pt;
+  color: #4B5563;
+  font-style: italic;
+}
+
+.print-question .q-text {
+  font-size: 10.5pt;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  margin-bottom: 5pt;
+  text-align: justify;
+}
+
+.print-question .q-options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.print-question .q-options li {
+  display: flex;
+  gap: 6pt;
+  align-items: flex-start;
+  padding: 2.5pt 0;
+  font-size: 10.5pt;
+  line-height: 1.35;
+}
+
+.print-question .q-options .letter {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.print-columns-2 .print-questions-grid {
+  column-count: 2;
+  column-gap: 22pt;
+  column-rule: 1px solid #D1D5DB;
+}
+
+.print-footer {
+  margin-top: 20pt;
+  border-top: 1px solid #D1D5DB;
+  padding-top: 6pt;
+  font-size: 8pt;
+  color: #4B5563;
+  text-align: center;
+}
+
+/* @media print Rules */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm 15mm;
+  }
+
+  html, body, #root, #root > div, .print-wrap {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-doc {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print-columns-2 .print-questions-grid {
+    column-count: 2 !important;
+  }
+
+  .print-question {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none;
+  }
+}

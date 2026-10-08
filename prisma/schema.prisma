@@ -1,0 +1,133 @@
+// Prisma Schema — Simulify
+// Runtime alvo: Cloudflare Workers + Neon PostgreSQL / Hyperdrive
+// Documentação: BACKEND.md & ARCHITECTURE.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanType {
+  FREE
+  PRO
+}
+
+enum QuestionDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum SimulationStatus {
+  DRAFT
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum TimerType {
+  CRONOMETRO
+  MARCADOR
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  username      String
+  passwordHash  String?
+  plan          PlanType       @default(FREE)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  simulations   Simulation[]
+  results       ExamResult[]
+  studyGoals    StudyGoal?
+
+  @@map("users")
+}
+
+model StudyGoal {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  daysOfWeek       Int[]    // 0 = Domingo, 1 = Segunda, 2 = Terça, ..., 6 = Sábado
+  targetPerDay     Int      @default(15)
+  weeklyTarget     Int      @default(45)
+  streakDays       Int      @default(0)
+  updatedAt        DateTime @updatedAt
+
+  @@map("study_goals")
+}
+
+model Simulation {
+  id               String            @id @default(uuid())
+  userId           String?
+  user             User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  title            String
+  description      String?
+  status           SimulationStatus  @default(READY)
+  timeLimitMinutes Int               @default(15)
+  columns          Int               @default(2)
+  timerType        TimerType         @default(MARCADOR)
+  tags             String[]
+  isPreset         Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  questions        Question[]
+  results          ExamResult[]
+
+  @@map("simulations")
+}
+
+model Question {
+  id           String             @id @default(uuid())
+  simulationId String?
+  simulation   Simulation?        @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  statement    String
+  options      String[]
+  correctIndex Int
+  explanation  String?
+  subject      String             @default("Geral")
+  difficulty   QuestionDifficulty @default(MEDIUM)
+  createdAt    DateTime           @default(now())
+
+  answers      ExamAnswer[]
+
+  @@map("questions")
+}
+
+model ExamResult {
+  id               String       @id @default(uuid())
+  userId           String?
+  user             User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  simulationId     String
+  simulation       Simulation   @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  totalQuestions   Int
+  correctCount     Int
+  scorePercentage  Int
+  totalTimeSeconds Int
+  completedAt      DateTime     @default(now())
+
+  answers          ExamAnswer[]
+
+  @@map("exam_results")
+}
+
+model ExamAnswer {
+  id             String      @id @default(uuid())
+  resultId       String
+  result         ExamResult  @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedOption Int?
+  isCorrect      Boolean
+  timeSpentSec   Int         @default(0)
+
+  @@map("exam_answers")
+}
