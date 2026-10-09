@@ -21,6 +21,7 @@ import {
 import { storageService } from '../../services/storageService';
 import { Simulado, Question, ExamAnswerRecord, ActiveExamSession, ExamResult } from '../../types';
 import { MarcadorVisual } from '../../components/exam/MarcadorVisual';
+import { QuestionNavigationDock } from '../../components/exam/QuestionNavigationDock';
 import { Button } from '../../components/common/Button';
 import { ThemeToggle } from '../../components/common/ThemeToggle';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
@@ -219,6 +220,7 @@ export const ExamPage: React.FC = () => {
           ...existing,
           selectedOption: newSelection,
           eliminatedOptions: newEliminated,
+          markedForReview: false,
         },
       };
     });
@@ -274,6 +276,16 @@ export const ExamPage: React.FC = () => {
     const next = displayMode === 'step' ? 'continuous' : 'step';
     setDisplayMode(next);
     localStorage.setItem('simulify_display_mode', next);
+  };
+
+  const handleSelectQuestion = (idx: number) => {
+    setCurrentIdx(idx);
+    if (displayMode === 'continuous') {
+      const el = document.getElementById(`q-${idx}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
   };
 
   const formatTimer = (totalSec: number) => {
@@ -439,15 +451,15 @@ export const ExamPage: React.FC = () => {
             onClick={() => setIsSubmitModalOpen(true)}
             className="text-xs font-bold"
           >
-            Finalizar Simulado
+            Revisar
           </Button>
         </div>
       </header>
 
       {/* Main Layout */}
-      <div className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="flex-1 max-w-5xl lg:max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 pr-12 sm:pr-14 md:pr-16 relative">
         {/* Left Side: Question Sheet */}
-        <main className="lg:col-span-8 space-y-6">
+        <main className="w-full space-y-6">
           {/* Tip banner */}
           <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
             <span>
@@ -503,6 +515,15 @@ export const ExamPage: React.FC = () => {
                   return (
                     <div
                       key={optIdx}
+                      onClick={() => handleSelectOption(currentIdx, optIdx)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleSelectOption(currentIdx, optIdx);
+                        }
+                      }}
                       className={`group relative flex items-start justify-between p-4 rounded-xl border transition-all cursor-pointer select-none ${
                         isSelected
                           ? 'bg-brand-50/70 dark:bg-brand-950/40 border-brand-500 dark:border-brand-500 ring-2 ring-brand-500/20'
@@ -511,7 +532,7 @@ export const ExamPage: React.FC = () => {
                           : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-brand-300 dark:hover:border-slate-700'
                       }`}
                     >
-                      <button type="button" onClick={() => handleSelectOption(currentIdx, optIdx)} className="flex min-w-0 flex-1 items-start gap-3.5 pr-3 text-left">
+                      <div className="flex min-w-0 flex-1 items-start gap-3.5 pr-3 text-left">
                         <div
                           className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 transition-colors ${
                             isSelected
@@ -532,7 +553,7 @@ export const ExamPage: React.FC = () => {
                         >
                           {optionText}
                         </div>
-                      </button>
+                      </div>
 
                       <button
                         type="button"
@@ -581,9 +602,9 @@ export const ExamPage: React.FC = () => {
                     variant="primary"
                     size="md"
                     onClick={() => setIsSubmitModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-500"
+                    className="bg-emerald-600 hover:bg-emerald-500 font-bold"
                   >
-                    Revisar e Finalizar
+                    Revisar
                   </Button>
                 )}
               </div>
@@ -644,6 +665,15 @@ export const ExamPage: React.FC = () => {
                         return (
                           <div
                             key={optIdx}
+                            onClick={() => handleSelectOption(qIndex, optIdx)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleSelectOption(qIndex, optIdx);
+                              }
+                            }}
                             className={`group relative flex items-start justify-between p-3 rounded-xl border transition-all cursor-pointer select-none text-xs sm:text-sm ${
                               isSelected
                                 ? 'bg-brand-50/70 dark:bg-brand-950/40 border-brand-500 ring-2 ring-brand-500/20'
@@ -652,7 +682,7 @@ export const ExamPage: React.FC = () => {
                                 : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-brand-300'
                             }`}
                           >
-                            <button type="button" onClick={() => handleSelectOption(qIndex, optIdx)} className="flex min-w-0 flex-1 items-start gap-2.5 pr-2 text-left">
+                            <div className="flex min-w-0 flex-1 items-start gap-2.5 pr-2 text-left">
                               <span
                                 className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] flex-shrink-0 ${
                                   isSelected
@@ -673,7 +703,7 @@ export const ExamPage: React.FC = () => {
                               >
                                 {optionText}
                               </span>
-                            </button>
+                            </div>
 
                             <button
                               type="button"
@@ -698,84 +728,21 @@ export const ExamPage: React.FC = () => {
                   onClick={() => setIsSubmitModalOpen(true)}
                   className="bg-emerald-600 hover:bg-emerald-500 font-bold"
                 >
-                  Finalizar e Entregar Prova
+                  Revisar
                 </Button>
               </div>
             </div>
           )}
         </main>
 
-        {/* Right Side: Linear Question Navigation Drawer */}
-        <aside className="lg:col-span-4 space-y-4 sticky top-20">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Grade de Questões
-              </h3>
-              <span className="text-xs font-bold text-brand-600 dark:text-brand-400">
-                {answeredCount} de {totalQuestions}
-              </span>
-            </div>
-
-            {/* Grid of question buttons */}
-            <div className="grid grid-cols-5 gap-2">
-              {simulado.questions.map((_, idx) => {
-                const rec = answers[idx];
-                const isAnswered = rec && rec.selectedOption !== null;
-                const isReview = rec && rec.markedForReview;
-                const isCurrent = idx === currentIdx;
-
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setCurrentIdx(idx);
-                      if (displayMode === 'continuous') {
-                        const el = document.getElementById(`q-${idx}`);
-                        if (el) el.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                    className={`relative h-10 rounded-xl font-bold text-xs flex items-center justify-center transition-all ${
-                      isCurrent && displayMode === 'step'
-                        ? 'ring-2 ring-brand-500 bg-brand-600 text-white shadow-sm'
-                        : isReview
-                        ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
-                        : isAnswered
-                        ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    {idx + 1}
-                    {isReview && (
-                      <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Legend */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2 text-[11px] text-slate-500 dark:text-slate-400">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded bg-emerald-500"></span>
-                <span>Respondida ({answeredCount})</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded bg-slate-300 dark:bg-slate-700"></span>
-                <span>Em branco ({blankCount})</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded bg-amber-400"></span>
-                <span>Revisar ({reviewCount})</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded bg-brand-600"></span>
-                <span>Foco Atual</span>
-              </div>
-            </div>
-          </div>
-        </aside>
+        {/* Sleek Vertical Navigation Dock with Fisheye Magnification */}
+        <QuestionNavigationDock
+          totalQuestions={totalQuestions}
+          currentIdx={currentIdx}
+          answers={answers}
+          onSelectQuestion={handleSelectQuestion}
+          displayMode={displayMode}
+        />
       </div>
 
       {/* Confirmation Modal to Submit Exam */}
