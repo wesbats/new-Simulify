@@ -38,6 +38,7 @@ pnpm-debug.log*
 .temp/
 *.tmp
 .turbo/
+repomix*
 
 # Editor & IDE files
 .vscode/*
